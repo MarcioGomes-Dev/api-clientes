@@ -1,25 +1,43 @@
 package br.com.cotiinformatica.api_clientes.controllers;
 
+import br.com.cotiinformatica.api_clientes.dtos.ClienteRequest;
 import br.com.cotiinformatica.api_clientes.services.ClienteService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/cliente")
 public class ClienteController {
 
     @PostMapping("criar")
-    public String criar(@RequestParam String nome, @RequestParam String cpf) {
+    public ResponseEntity<?> criar(@RequestBody ClienteRequest request) {
         try{
             var clienteService = new ClienteService();
-            clienteService.cadastrarCliente(nome, cpf);
+            clienteService.cadastrarCliente(request);
 
-            return "Cliente " + nome + ", cadastrado com sucesso!";
+            return ResponseEntity.status(201).body("Cliente " + request.nome() + ", cadastrado com sucesso!");
+        }
+        catch (IllegalArgumentException e){
+            return ResponseEntity.status(400).body(e.getMessage());
         }
         catch (Exception e) {
-            return e.getMessage();
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("consultar")
+    public ResponseEntity<?> consultar(@RequestParam String nome) {
+        try{
+            var clienteService = new ClienteService();
+            var lista = clienteService.pesquisarClientes(nome);
+
+            return ResponseEntity.status(200).body(lista);
+        }
+        catch (IllegalArgumentException e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
         }
     }
 }
