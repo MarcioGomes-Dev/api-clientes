@@ -61,4 +61,13 @@ public class ClienteService {
 
         return lista;
     }
+
+    public void excluirCliente(Integer id) throws Exception{
+
+       var result = clienteRepository.excluir(id);
+
+       if(result){
+           throw new IllegalArgumentException("Nenhum cliente foi encontrado para exclusão.");
+       }
+    }
 }
